@@ -1,6 +1,6 @@
 public class ParkingSlot {
-    private boolean isOccupied;
-    private int slotId;
+    private boolean isOccupied;         // Identifies vacancy status of a ParkingSlot
+    private int slotId;                 // Identifies unique number of a parking slot
 
     // Default Ctor
     public ParkingSlot(int slotId) {
@@ -13,6 +13,7 @@ public class ParkingSlot {
         return this.isOccupied;
     }
 
+    // Getter fot slotId
     public int getSlotId() {
         return this.slotId;
     }
@@ -27,6 +28,7 @@ public class ParkingSlot {
         this.isOccupied = true;
     }
 
+    // Setter for slotId
     private void setSlotId(int slotId) {
         this.slotId = slotId;
     }
