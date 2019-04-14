@@ -7,6 +7,19 @@
     <groupId>com.hikarukei.parkinglot</groupId>
     <artifactId>parking_lot</artifactId>
     <version>1.0</version>
+    <dependencies>
+        <dependency>
+            <groupId>com.hikarukei.parkinglot</groupId>
+            <artifactId>parking_lot</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations-java5</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
 
 </project>
