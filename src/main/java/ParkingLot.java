@@ -14,6 +14,7 @@ public class ParkingLot {
         setParkingCapacity(parkingCapacity);
         this.parkingSlotMap = new HashMap<Integer, ParkingSlot>(getParkingCapacity());
         this.tickets = new ArrayList<Ticket>();
+        this.activeTickets = new ArrayList<Ticket>();
         for (int i = 0; i < getParkingCapacity(); i++) {
             this.parkingSlotMap.put(i+1, new ParkingSlot());
         }
@@ -84,5 +85,80 @@ public class ParkingLot {
         }
     }
 
+    // Remove duplicates from ArrayList<T>
+    private<T> ArrayList<T> removeDuplicates(ArrayList<T> list) {
+        ArrayList<T> newList = new ArrayList<T>();
+        for (T element : list) {
+            if (!newList.contains(element)) {
+                newList.add(element);
+            }
+        }
+        return newList;
+    }
+
+    // Prints registration numbers of all cars of a particular colour.
+    // ASSUMPTION : There is no duplicated registration number returned
+    public void RegNumberBasedOnColor(String color) {
+        ArrayList<String> regNumbers = new ArrayList<String>();
+        for (Ticket ticket : this.tickets) {
+            if (ticket.getAffiliatedCar().getColor().equals(color)) {
+                regNumbers.add(ticket.getAffiliatedCar().getRegistrationNumber());
+            }
+        }
+
+        if (regNumbers.isEmpty()) {
+            System.out.println("Not found");
+        } else {
+            printList(removeDuplicates(regNumbers));
+        }
+    }
+
+    // Prints slot number of assigned parkingSlot of a car with a given registration number
+    // ASSUMPTION : System just need to query existing active parking state
+    public void printSlotNumberOfRegNumber(String registrationNumber) {
+        int slotId = -1;
+        for (Ticket ticket : this.activeTickets) {
+            if (ticket.getAffiliatedCar().getRegistrationNumber().equals(registrationNumber)) {
+                slotId = ticket.getAllocatedSlotId();
+            }
+        }
+
+        if (slotId == -1) {
+            System.out.println("Not found");
+        } else {
+            System.out.println(slotId);
+        }
+    }
+
+    // Prints slot numbers of all slots where a car of a particular colour is parked.
+    // ASSUMPTION : There is no duplicated registration number returned
+    //              System just need to query existing active parking state
+    public void printSlotNumbersOfColor(String color) {
+        ArrayList<Integer> integers = new ArrayList<Integer>();
+        for (Ticket ticket : this.activeTickets) {
+            if (ticket.getAffiliatedCar().getColor().equals(color)) {
+                integers.add(ticket.getAllocatedSlotId());
+            }
+        }
+
+        if (integers.isEmpty()) {
+            System.out.println("Not found");
+        } else {
+            printList(integers);
+        }
+    }
+
+    // Prints ArrayList<T> with commas and newline at the end
+    public<T> void printList(ArrayList<T> list) {
+        int i = 0;
+        for (T element : list) {
+            System.out.print(element);
+            i++;
+            if (i < list.size()) {
+                System.out.print(", ");
+            }
+        }
+        System.out.println();
+    }
 
 }
