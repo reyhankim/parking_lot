@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParkingLot {
+class ParkingLot {
     private ArrayList<Ticket> tickets;                  // A collection of all tickets
     private ArrayList<Ticket> activeTickets;            // A collection of all active tickets
     private Map<Integer,ParkingSlot> parkingSlotMap;    // HashMap of active tickets and its parkingSlot
@@ -10,40 +10,48 @@ public class ParkingLot {
 
     // Initialize a ParkingLot with maximum capacity of parkingCapacity
     // All initialized ParkingSlots are marked as unoccupied
-    public ParkingLot(int parkingCapacity) {
+    ParkingLot(int parkingCapacity) {
         setParkingCapacity(parkingCapacity);
-        this.parkingSlotMap = new HashMap<Integer, ParkingSlot>(getParkingCapacity());
-        this.tickets = new ArrayList<Ticket>();
-        this.activeTickets = new ArrayList<Ticket>();
+        this.parkingSlotMap = new HashMap<>(getParkingCapacity());
+        this.tickets = new ArrayList<>();
+        this.activeTickets = new ArrayList<>(getParkingCapacity());
         for (int i = 0; i < getParkingCapacity(); i++) {
             this.parkingSlotMap.put(i+1, new ParkingSlot());
+            this.activeTickets.add(i, null);
         }
         System.out.println("Created a parking lot with " + this.getParkingCapacity() + " slots");
     }
 
     // Getter for parkingCapacity
-    public int getParkingCapacity() {
+    private int getParkingCapacity() {
         return this.parkingCapacity;
     }
 
     // Setter for parkingCapacity
-    public void setParkingCapacity(int parkingCapacity) {
+    private void setParkingCapacity(int parkingCapacity) {
         this.parkingCapacity = parkingCapacity;
     }
 
     // Check for full ParkingLot, returns true if the ParkingLot is full
-    public boolean isFull() {
-        return !this.parkingSlotMap.containsValue(null);
+    private boolean isFull() {
+        boolean temporarilyFull = true;
+        for (Map.Entry<Integer, ParkingSlot> entry : this.parkingSlotMap.entrySet()) {
+            if (!entry.getValue().isOccupied()) {
+                temporarilyFull = false;
+                break;
+            }
+        }
+        return temporarilyFull;
     }
 
     // Allocate a nearest parkingSlot for a car
     // Definition of nearest: unoccupied parkingSlot with the smallest slotId available
-    public void park(Car car) {
+    void park(Car car) {
         if (!isFull()) {
             for (Map.Entry<Integer, ParkingSlot> entry : this.parkingSlotMap.entrySet()) {
                 if (!entry.getValue().isOccupied()) {
                     Ticket newTicket = new Ticket(car, entry.getKey());
-                    this.activeTickets.add(entry.getKey(), newTicket);
+                    this.activeTickets.set(entry.getKey()-1, newTicket);
                     this.tickets.add(newTicket);
                     entry.getValue().allocate();
                     System.out.println("Allocated slot number: " + entry.getKey());
@@ -59,35 +67,33 @@ public class ParkingLot {
     // Deactivate a ticket, then move the ticket containing vehicle information to historicalTickets
     // ASSUMPTION 1 : If there is no car assigned on a parkingSlot, say "Slot number <slotId> is free" anyway.
     // ASSUMPTION 2 : If user enter invalid slotId, nothing will happen
-    public void releaseParkingSlot(int slotId) {
+    void releaseParkingSlot(int slotId) {
         if (slotId <= this.getParkingCapacity()) {
             for (Map.Entry<Integer, ParkingSlot> entry : this.parkingSlotMap.entrySet()) {
                 if (entry.getKey() == slotId) {
-                    this.activeTickets.remove(entry.getKey().intValue());
+                    this.activeTickets.set(entry.getKey()-1, null);
                     entry.getValue().release();
                     break;
                 }
             }
             System.out.println("Slot number " + slotId + " is free");
-        } else {
-            assert slotId > this.getParkingCapacity();      // Recheck whether slotId is really > parkingCapacity at Debug Level
         }
     }
 
     // Print all parking cars at the parkingLot
     // ASSUMPTION : Even if there is no car parking, this method will still print the headers
-    public void status() {
+    void status() {
         System.out.println("Slot No.  Registration No    Colour");
         for (Map.Entry<Integer, ParkingSlot> entry : this.parkingSlotMap.entrySet()) {
-            if (entry.getValue().isOccupied()) {
-                System.out.format("%9d%18s%20s\n", entry.getKey(), this.activeTickets.get(entry.getKey()).getAffiliatedCar().getRegistrationNumber(), this.activeTickets.get(entry.getKey()).getAffiliatedCar().getColor());
+            if (entry.getValue().isOccupied() && this.activeTickets.get(entry.getKey()-1) != null) {
+                System.out.format("%9d%18s%20s\n", entry.getKey(), this.activeTickets.get(entry.getKey()-1).getAffiliatedCar().getRegistrationNumber(), this.activeTickets.get(entry.getKey()-1).getAffiliatedCar().getColor());
             }
         }
     }
 
     // Remove duplicates from ArrayList<T>
     private<T> ArrayList<T> removeDuplicates(ArrayList<T> list) {
-        ArrayList<T> newList = new ArrayList<T>();
+        ArrayList<T> newList = new ArrayList<>();
         for (T element : list) {
             if (!newList.contains(element)) {
                 newList.add(element);
@@ -98,8 +104,8 @@ public class ParkingLot {
 
     // Prints registration numbers of all cars of a particular colour.
     // ASSUMPTION : There is no duplicated registration number returned
-    public void RegNumberBasedOnColor(String color) {
-        ArrayList<String> regNumbers = new ArrayList<String>();
+    void RegNumberBasedOnColor(String color) {
+        ArrayList<String> regNumbers = new ArrayList<>();
         for (Ticket ticket : this.tickets) {
             if (ticket.getAffiliatedCar().getColor().equals(color)) {
                 regNumbers.add(ticket.getAffiliatedCar().getRegistrationNumber());
@@ -115,11 +121,13 @@ public class ParkingLot {
 
     // Prints slot number of assigned parkingSlot of a car with a given registration number
     // ASSUMPTION : System just need to query existing active parking state
-    public void printSlotNumberOfRegNumber(String registrationNumber) {
+    void printSlotNumberOfRegNumber(String registrationNumber) {
         int slotId = -1;
         for (Ticket ticket : this.activeTickets) {
-            if (ticket.getAffiliatedCar().getRegistrationNumber().equals(registrationNumber)) {
-                slotId = ticket.getAllocatedSlotId();
+            if (ticket != null) {
+                if (ticket.getAffiliatedCar().getRegistrationNumber().equals(registrationNumber)) {
+                    slotId = ticket.getAllocatedSlotId();
+                }
             }
         }
 
@@ -133,11 +141,13 @@ public class ParkingLot {
     // Prints slot numbers of all slots where a car of a particular colour is parked.
     // ASSUMPTION : There is no duplicated registration number returned
     //              System just need to query existing active parking state
-    public void printSlotNumbersOfColor(String color) {
-        ArrayList<Integer> integers = new ArrayList<Integer>();
+    void printSlotNumbersOfColor(String color) {
+        ArrayList<Integer> integers = new ArrayList<>();
         for (Ticket ticket : this.activeTickets) {
-            if (ticket.getAffiliatedCar().getColor().equals(color)) {
-                integers.add(ticket.getAllocatedSlotId());
+            if (ticket != null) {
+                if (ticket.getAffiliatedCar().getColor().equals(color)) {
+                    integers.add(ticket.getAllocatedSlotId());
+                }
             }
         }
 
@@ -149,7 +159,7 @@ public class ParkingLot {
     }
 
     // Prints ArrayList<T> with commas and newline at the end
-    public<T> void printList(ArrayList<T> list) {
+    private <T> void printList(ArrayList<T> list) {
         int i = 0;
         for (T element : list) {
             System.out.print(element);
