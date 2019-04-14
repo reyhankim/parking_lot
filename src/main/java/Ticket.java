@@ -1,20 +1,11 @@
 public class Ticket {
-    private static int activeTicket;            // Record how many activeTickets available
-
-    private boolean isActive;                   // Ticket status
     private Car affiliatedCar;                  // Car affiliated to a ticket
-    private ParkingSlot allocatedSlot;          // Allocated ParkingSlot for the ticket
+    private int allocatedSlotId;                // Allocated ParkingSlot Id for the ticket
 
     // User defined constructor for the ticket
-    public Ticket(Car affiliatedCar, ParkingSlot allocatedSlot) {
+    public Ticket(Car affiliatedCar, int allocatedSlotId) {
         setAffiliatedCar(affiliatedCar);
-        setAllocatedSlot(allocatedSlot);
-        activateTicket();
-    }
-
-    // Check ticket activation status
-    public boolean isActive() {
-        return this.isActive;
+        setAllocatedSlotId(allocatedSlotId);
     }
 
     // Getter for affiliatedCar
@@ -22,26 +13,9 @@ public class Ticket {
         return this.affiliatedCar;
     }
 
-    // Getter for allocatedSlot
-    public ParkingSlot getAllocatedSlot() {
-        return this.allocatedSlot;
-    }
-
-    // Getter for activeTicket counter
-    public static int getActiveTicket() {
-        return activeTicket;
-    }
-
-    // set a ticket status to active
-    private void activateTicket() {
-        this.isActive = true;
-        activeTicket++;
-    }
-
-    // set a ticket status to not active
-    private void deactivateTicket() {
-        this.isActive = false;
-        activeTicket--;
+    // Getter for allocatedSlotId
+    public int getAllocatedSlotId() {
+        return this.allocatedSlotId;
     }
 
     // Setter for affiliatedCar
@@ -49,8 +23,8 @@ public class Ticket {
         this.affiliatedCar = affiliatedCar;
     }
 
-    // Setter for ParkingSlot allocation
-    private void setAllocatedSlot(ParkingSlot allocatedSlot) {
-        this.allocatedSlot = allocatedSlot;
+    // Setter for ParkingSlotId allocation
+    private void setAllocatedSlotId(int allocatedSlotId) {
+        this.allocatedSlotId = allocatedSlotId;
     }
 }
