@@ -2,7 +2,7 @@
 A coding test for Mapan Tech Summer Internship Program in Java -- created by Reyhan Naufal Hakim
 
 ## Dependencies
-- Java (JBR11)
+- Java (Java SE 8 and above)
 - JUnit 5 for Unit Testing
 
 ## Setup

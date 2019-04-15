@@ -5,3 +5,20 @@
 #
 # After this is run, bin/parking_lot
 # should Just Work.
+
+# Installing dependencies
+sudo apt-get update -q \
+&& sudo apt-get upgrade
+sudo add-apt-repository ppa: openjdk-r/ppa
+sudo apt-get update
+sudo apt-get install openjdk-11-jdk
+sudo apt-get install junit
+sudo apt-get install maven
+# Compile and Test
+mvn clean compile assembly:single
+mvn install
+mvn test -Dtest=CarTest
+mvn test -Dtest=ParkingLotTest
+mvn test -Dtest=ParkingSlotTest
+mvn test -Dtest=TicketTest
+mvn package -Dmaven.test.skip=true
